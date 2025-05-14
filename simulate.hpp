@@ -20,7 +20,6 @@ private:
 public:
     RAM(const std::vector<fragment>& frag) : ram_(MEMORY_SIZE) {
         for (const auto& el : frag) {
-
             for (int i = 0; i < el.data.size(); ++i) {
                 ram_[el.addres + i] = el.data[i];
             }
@@ -285,12 +284,12 @@ public:
 
 template<>
 void CacheController<CRP::LRU>::PrintRate()  {
-    printf("        LRU\t%3.5f%%\t%3.5f%%\t%3.5f%%\n", (100.0 * (hits_data_ + hits_inst_)) / (inst_cnt_ + data_cnt_), 100.0 * hits_inst_ / inst_cnt_, 100.0 * hits_data_ / data_cnt_);
+    printf("        LRU\t%3.5f%%\t%3.5f%%\t%3.5f%%\n", std::abs((100.0 * (hits_data_ + hits_inst_)) / (inst_cnt_ + data_cnt_)), std::abs(100.0 * hits_inst_ / inst_cnt_), std::abs(100.0 * hits_data_ / data_cnt_));
 }
 
 template<>
 void CacheController<CRP::pLRU>::PrintRate() {
-    printf("      bpLRU\t%3.5f%%\t%3.5f%%\t%3.5f%%\n", (100.0 * (hits_data_ + hits_inst_)) / (inst_cnt_ + data_cnt_), 100.0 * hits_inst_ / inst_cnt_, 100.0 * hits_data_ / data_cnt_);
+    printf("      bpLRU\t%3.5f%%\t%3.5f%%\t%3.5f%%\n", std::abs((100.0 * (hits_data_ + hits_inst_)) / (inst_cnt_ + data_cnt_)), std::abs(100.0 * hits_inst_ / inst_cnt_), std::abs(100.0 * hits_data_ / data_cnt_));
 }
 
 class Proccesor {
@@ -317,7 +316,6 @@ public:
             if (pc == ra) {
                 break;
             }
-    
             uint32_t instr = cache.template ReadFromCache<uint32_t>(pc, false, ram);
             uint32_t opcode = GetOpcode(instr);
             uint32_t rd = GetRd(instr);
