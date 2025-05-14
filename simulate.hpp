@@ -96,17 +96,14 @@ public:
                 return i;                                                                   
             }
         }
+        for (size_t i = 0; i < lines.size(); ++i) {
+            lines[i].plru = false;
+        }
         return 0;
     }
 
     static void UpdateLines(uint32_t line, std::array<CacheLine, CACHE_WAY>& lines) {
-        lines[line].plru = true;
-        if (std::all_of(lines.begin(), lines.end(), [](auto &ln){ return ln.plru; })) {
-            for (auto& ln : lines) {
-                ln.plru = false;
-            }
-            lines[line].plru = true;
-        }
+        lines[line].plru = true;     
     }
 };
 
