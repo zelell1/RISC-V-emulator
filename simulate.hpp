@@ -96,14 +96,24 @@ public:
                 return i;                                                                   
             }
         }
-        for (size_t i = 0; i < lines.size(); ++i) {
-            lines[i].plru = false;
-        }
         return 0;
     }
 
     static void UpdateLines(uint32_t line, std::array<CacheLine, CACHE_WAY>& lines) {
-        lines[line].plru = true;     
+        lines[line].plru = true;
+        bool all_busy = true;
+        for (uint32_t i = 0; i < CACHE_WAY; ++i) {
+            if (!lines[i].plru) {
+                all_busy = false;
+                
+            }
+        }
+        if (all_busy) {
+            for (uint32_t i = 0; i < CACHE_WAY; ++i) {
+                lines[i].plru = false;
+            }
+        }   
+        lines[line].plru = true; 
     }
 };
 
@@ -393,7 +403,7 @@ public:
                 } else if (funct3 == 0b101 && funct7 == 0b0000000) { // srl
                     regs_[rd] = regs_[rs1] >> (regs_[rs2] & ((1UL << 5UL) - 1UL));
                     pc += 4;
-                } else if (funct3 == 0b101 && funct7 == 0b0100000) { // srl
+                } else if (funct3 == 0b101 && funct7 == 0b0100000) { // sra
                     regs_[rd] = static_cast<int32_t>(regs_[rs1]) >> (regs_[rs2] & ((1UL << 5UL) - 1UL));
                     pc += 4;
                 } else if (funct3 == 0b110 && funct7 == 0b0000000) { // or
@@ -402,7 +412,7 @@ public:
                 }  else if (funct3 == 0b111 && funct7 == 0b0000000) { // and
                     regs_[rd] = regs_[rs1] & regs_[rs2];
                     pc += 4;
-                } if (funct3 == 0b000 && funct7 == 0b0000001) {
+                } if (funct3 == 0b000 && funct7 == 0b0000001) { // mul
                     regs_[rd] = static_cast<int32_t>(regs_[rs1]) * static_cast<int32_t>(regs_[rs2]);
                     pc += 4;
                 } else if (funct3 == 0b001 && funct7 == 0b0000001) { // mulh
